@@ -1,0 +1,24 @@
+import matplotlib.pyplot as plt
+
+models = ['Logistic Regression', 'Decision Tree']
+
+accuracy = [0.78, 0.83]
+precision = [0.76, 0.81]
+recall = [0.71, 0.79]
+f1_score = [0.73, 0.80]
+
+metrics = {
+    'Accuracy': accuracy,
+    'Precision': precision,
+    'Recall': recall,
+    'F1-Score': f1_score
+}
+
+for metric, values in metrics.items():
+    plt.figure()
+    plt.bar(models, values)
+    plt.title(f'{metric} Comparison Between Models')
+    plt.ylabel(metric)
+    plt.xlabel('Model')
+    plt.ylim(0, 1)
+    plt.show()
