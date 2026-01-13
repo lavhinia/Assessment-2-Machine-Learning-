@@ -1,0 +1,65 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score
+
+# =========================
+# Load dataset
+# =========================
+df = pd.read_csv("/Users/lavignejoicee/Downloads/developer_stress.csv")
+
+# =========================
+# Create binary target
+# =========================
+df['Stress_Class'] = df['Stress_Level'].apply(lambda x: 1 if x >= 50 else 0)
+df.drop('Stress_Level', axis=1, inplace=True)
+
+# =========================
+# Encode categorical columns
+# =========================
+label_encoder = LabelEncoder()
+for col in df.columns:
+    if df[col].dtype == 'object':
+        df[col] = label_encoder.fit_transform(df[col])
+
+# =========================
+# Split data
+# =========================
+X = df.drop('Stress_Class', axis=1)
+y = df['Stress_Class']
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# =========================
+# Feature scaling (IMPORTANT for KNN)
+# =========================
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# =========================
+# Train KNN with different K values
+# =========================
+k_values = range(1, 21)
+accuracies = []
+
+for k in k_values:
+    knn = KNeighborsClassifier(n_neighbors=k)
+    knn.fit(X_train, y_train)
+    predictions = knn.predict(X_test)
+    acc = accuracy_score(y_test, predictions)
+    accuracies.append(acc)
+
+# =========================
+# Plot K vs Accuracy graph
+# =========================
+plt.figure()
+plt.plot(k_values, accuracies, marker='o')
+plt.xlabel("Number of Neighbors (K)")
+plt.ylabel("Accuracy")
+plt.title("KNN Accuracy for Different K Values")
+plt.ylim(0, 1)
